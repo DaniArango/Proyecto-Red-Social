@@ -1,17 +1,10 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const PostSchema = new mongoose.Schema(
-  {
-    Username: String,
-    Body: String,
-  },
-  { timestamps: true }
-);
+const PostSchema = new mongoose.Schema({
+    title: String,
+    body: String,
+}, { timestamps: true });
 
-PostSchema.index({
-  name: "text",
-});
+const Post = mongoose.model('Post', PostSchema);
 
-const Product = mongoose.model("Product", PosttSchema);
-
-module.exports = Product;
+module.exports = Post;
