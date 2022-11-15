@@ -38,7 +38,33 @@ const UserController = {
             res.status(500).send(error);
         }
     },
-}
+    async logout(req, res) {
+        try {
+            await User.findByIdAndUpdate(req.user._id, {
+                $pull: { tokens: req.headers.authorization },
+            });
+            res.send({ msg: "Desconectado con éxito" });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({
+                msg: "No hasido posible desconectar usuario",
+            });
+        }
+    },
+    async getInfo(req, res) {
+        try {
+          const user = await User.findById(req.user._id).populate({
+            path: "postIds",
+          }).populate("wishList")
+          ;
+    
+          res.send(user);
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    };
+
 
 
 

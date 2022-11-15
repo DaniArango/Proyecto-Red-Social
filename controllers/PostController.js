@@ -65,12 +65,12 @@ const PostController = {
   },
   async getPostByName(req, res) {
     try {
-        if (req.params.title.length > 20) {
-          return res.status(400).send("Búsqueda demasiado larga");
-        }
-        const title = new RegExp(req.params.title, "i");
-        const post = await Post.find({ title });
-       res.send(post);
+      if (req.params.title.length > 20) {
+        return res.status(400).send("Búsqueda demasiado larga");
+      }
+      const title = new RegExp(req.params.title, "i");
+      const post = await Post.find({ title });
+      res.send(post);
     } catch (error) {
       console.error(error);
       res.status(500).send({
@@ -78,7 +78,20 @@ const PostController = {
         error,
       });
     }
-}
+  },
+  async insertComment(req, res) {
+    try {
+      const post = await Post.findByIdAndUpdate(
+        req.params._id,
+        { $push: { comments: { comment: req.body.comment, userId: req.user._id } } },
+        { new: true }
+      );
+      res.send({msg:"comentario creado",post});
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ msg: "Hay un problema con tu comentario" });
+    }
+  },
 };
 
 

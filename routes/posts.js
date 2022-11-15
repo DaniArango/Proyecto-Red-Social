@@ -9,7 +9,7 @@ router.get("/getPostByName/:name",PostController.getPostByName)
 router.get("/getById/:_id",PostController.getById)
 router.put("/update/:_id",authentication, PostController.update)
 router.delete("/deletePost/:_id",authentication, PostController.delete)
-
+router.put('/comments/:_id',authentication, PostController.insertComment)                                          
 
 
 module.exports = router
