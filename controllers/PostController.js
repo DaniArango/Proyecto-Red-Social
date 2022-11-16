@@ -1,4 +1,5 @@
 const Post = require("../models/Post");
+const User = require("../models/User");
 
 
 
@@ -6,6 +7,11 @@ const PostController = {
   async createPost(req, res) {
     try {
       const post = await Post.create({ ...req.body });
+      await User.findByIdAndUpdate(
+        req.user._id,
+        { $push: { postIds: post._id } },
+        { new: true }
+      )
       res.status(201).send(post);
     } catch (error) {
       console.error(error)
@@ -86,10 +92,38 @@ const PostController = {
         { $push: { comments: { comment: req.body.comment, userId: req.user._id } } },
         { new: true }
       );
-      res.send({msg:"comentario creado",post});
+      res.send({ msg: "comentario creado", post });
     } catch (error) {
       console.error(error);
       res.status(500).send({ msg: "Hay un problema con tu comentario" });
+    }
+  },
+  async like(req, res) {
+    try {
+      const post = await Post.findByIdAndUpdate(
+        req.params._id,
+        { $push: { likes: req.user._id } },
+        { new: true }
+      );
+      await User.findByIdAndUpdate
+      (req.user._id, { new: true });
+      res.send(post);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ msg: "Hay un problema con tu like" });
+    }
+  },
+  async dislike(req, res) {
+    try {
+      await Post.findByIdAndUpdate(req.params._id, {
+        $pull: { likes: req.user._id },
+      });
+      res.send({ msg: "Ya no te gusta esta publicacion" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        msg: "Hubo un problema al quitar tu like",
+      });
     }
   },
 };

@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Post = require('../models/Post');
 const jwt = require('jsonwebtoken');
 const { jwt_secret } = require('../config/keys.js')
 
@@ -19,4 +20,29 @@ const authentication = async (req, res, next) => {
     }
 }
 
-module.exports = { authentication }
+    const isAdmin = async (req, res, next) => {
+
+        const admins = ['admin', 'Principit@'];
+        if (!admins.includes(req.user.role)) {
+            return res.status(403).send({
+                message: 'No tienes permiso'
+            });
+        }
+        next();
+    }
+
+    const isAuthor = async(req, res, next) => {
+        try {
+            const post = await Post.findById(req.params._id);
+            if (post.userId.toString() !== req.user._id.toString()) { 
+                return res.status(403).send({ msg: 'Esta publicación no es tuya' });
+            }
+            next();
+        } catch (error) {
+            console.error(error)
+            return res.status(500).send({ error, msg: 'No se ha podido validar la autoria de la publicación' })
+        }
+    }
+
+
+module.exports = { authentication, isAdmin, isAuthor }

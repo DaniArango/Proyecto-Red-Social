@@ -2,15 +2,28 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.SchemaTypes.ObjectId;
 
 const PostSchema = new mongoose.Schema({
-    title: String,
-    body: String,
+    title: {
+        type: String,
+        required: [true, "Ingrese un titulo."],
+    },
+    body: {
+        type: String,
+        required: [true, "Ingrese texto"],
+    },
+    userId: {
+        type: ObjectId,
+        ref: 'User'
+    },
     comments: [{
 
         userId: { type: ObjectId, ref: 'User' },
         comment: String
-    }]
-    
-}, { timestamps: true });
+    },
+],
+likes: [{ type: ObjectId }],
+},
+{ timestamps: true }
+);
 
 const Post = mongoose.model('Post', PostSchema);
 

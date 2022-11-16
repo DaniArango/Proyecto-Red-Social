@@ -1,18 +1,37 @@
+const Post = require("../models/Post");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
+const { jwt_secret } = require("../config/keys");
 
-const { jwt_secret } = require('../config/keys.js')
 
 const UserController = {
-    async createUser(req, res) {
+    async createUser(req, res, next) {
         try {
             const password = await bcrypt.hash(req.body.password, 10);
             const user = await User.create({ ...req.body, password, role: "user" });
+            await Post.findByIdAndUpdate(
+                req.user._id,
+                { $push: { userId: user._id } },
+                { new: true }
+            )
             res.status(201).send(user);
         } catch (error) {
             console.error(error);
             res.status(500).send(error);
+            next(error);
+        }
+    },
+    async getAllUsers(req, res) {
+        try {
+            const user = await User.find();
+            res.send(user);
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({
+                msg: "Problema al traer los usuarios",
+                error,
+            });
         }
     },
 
@@ -43,27 +62,31 @@ const UserController = {
             await User.findByIdAndUpdate(req.user._id, {
                 $pull: { tokens: req.headers.authorization },
             });
-            res.send({ msg: "Desconectado con éxito" });
+            res.send({ message: "Desconectado con éxito" });
         } catch (error) {
             console.error(error);
             res.status(500).send({
-                msg: "No hasido posible desconectar usuario",
+                message: "Hubo un problema al intentar desconectar al usuario",
             });
         }
     },
+
     async getInfo(req, res) {
         try {
-          const user = await User.findById(req.user._id).populate({
-            path: "postIds",
-          }).populate("wishList")
-          ;
-    
-          res.send(user);
+            const user = await User.findById(req.user._id)
+                .populate({
+                    path: "postIds",
+                    populate: {
+                        path: "comments",
+
+                    },
+                });
+            res.send(user);
         } catch (error) {
-          console.error(error);
+            console.error(error);
         }
-      },
-    };
+    }
+};
 
 
 
