@@ -72,6 +72,42 @@ const UserController = {
         }
     },
 
+
+    async getUserByName(req, res) {
+        try {
+            if (req.params.name.length > 20) {
+                return res.status(400).send("Búsqueda demasiado larga");
+            }
+            const name = new RegExp(req.params.name, "i");
+            const user = await User.find({ name });
+            res.send({ msg: "su usuario", user });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({
+                msg: "No es posible traer al usuario",
+                error,
+            });
+        }
+    },
+    async getUserById(req, res) {
+        try {
+            const user = await User.findById(req.params._id)
+            res.send({ msg: "Usuario encontrado", user });
+        } catch (err) {
+            res.status(500).send({ msg: "Este usuario no se encuentra/ no existe", err });
+        }
+    },
+    async updateUser(req, res) {
+        try {
+            const user = await User.findByIdAndUpdate(req.params._id, req.body, {
+                new: true,
+            });
+            res.send({ msg: "Actualizado con exito" });
+        } catch (error) {
+            console.error(error);
+        }
+    },
+
     async getInfo(req, res) {
         try {
             const user = await User.findById(req.user._id)
