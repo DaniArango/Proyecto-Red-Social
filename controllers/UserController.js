@@ -2,7 +2,8 @@ const Post = require("../models/Post");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { jwt_secret } = require("../config/keys");
+require("dotenv").config();
+
 
 
 const UserController = {
@@ -47,7 +48,7 @@ const UserController = {
             if (!isMatch) {
                 return res.status(400).send("Correo o contraseña incorrectos");
             }
-            const token = jwt.sign({ _id: user._id }, jwt_secret);
+            const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
             if (user.tokens.length > 4) user.tokens.shift();
             user.tokens.push(token);
             await user.save();

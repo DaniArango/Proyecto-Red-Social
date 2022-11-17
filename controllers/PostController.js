@@ -22,7 +22,10 @@ const PostController = {
 
   async getAll(req, res) {
     try {
-      const post = await Post.find();
+      const post = await Post.find()
+        .populate("userId")
+        .limit(req.query.limit)
+        .skip((req.query.page - 1) * req.query.limit);
       res.send(post);
     } catch (error) {
       console.error(error);
@@ -106,7 +109,7 @@ const PostController = {
         { new: true }
       );
       await User.findByIdAndUpdate
-      (req.user._id, { new: true });
+        (req.user._id, { new: true });
       res.send(post);
     } catch (error) {
       console.error(error);
