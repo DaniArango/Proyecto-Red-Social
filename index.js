@@ -7,6 +7,7 @@ const {typeError} = require ("./middlewares/error")
 
 app.use(express.json())
 
+
 app.use('/posts', require('./routes/posts'));
 app.use('/users', require('./routes/users'));
 dbConnection()
