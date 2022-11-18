@@ -26,7 +26,7 @@ const PostController = {
         .populate("userId")
         .limit(req.query.limit)
         .skip((req.query.page - 1) * req.query.limit);
-      res.send({ post, msg: "Estas son las publciaciones" });
+      res.send({ post, msg: "Estas son todas las publciaciones" });
     } catch (error) {
       console.error(error);
       res.status(500).send({
