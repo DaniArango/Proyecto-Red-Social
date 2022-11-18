@@ -12,7 +12,7 @@ const PostController = {
         { $push: { postIds: post._id } },
         { new: true }
       )
-      res.status(201).send(post);
+      res.status(201).send({ msg: "Publicación realizada con exito" });
     } catch (error) {
       console.error(error)
       res.status(400)
@@ -26,7 +26,7 @@ const PostController = {
         .populate("userId")
         .limit(req.query.limit)
         .skip((req.query.page - 1) * req.query.limit);
-      res.send(post);
+      res.send({ post, msg: "Estas son las publciaciones" });
     } catch (error) {
       console.error(error);
       res.status(500).send({
@@ -43,9 +43,12 @@ const PostController = {
         req.body,
         { new: true }
       );
-      res.send({ msg: "publicación actualizada con exito", post });
+      res.send({ msg: "Publicación actualizada con exito", post });
     } catch (error) {
       console.error(error);
+      res.status(500).send({
+        msg: "No se ha podido actualizar la publicación",
+      });
     }
   },
   async delete(req, res) {
@@ -63,7 +66,7 @@ const PostController = {
   async getById(req, res) {
     try {
       const post = await Post.findById(req.params._id);
-      res.send(post);
+      res.send({ post, msg: "Publicación encontrada" });
     } catch (error) {
       console.error(error);
       res.status(500).send({

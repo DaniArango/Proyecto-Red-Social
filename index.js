@@ -4,10 +4,12 @@ require("dotenv").config();
 const PORT = process.env.PORT || 8080;
 const { dbConnection } = require("./config/config")
 const {typeError} = require ("./middlewares/error")
+const swaggerUI = require('swagger-ui-express')
+const docs = require('./docs/index')
 
 app.use(express.json())
 
-
+app.use('/api-docs', swaggerUI.serve,swaggerUI.setup(docs))
 app.use('/posts', require('./routes/posts'));
 app.use('/users', require('./routes/users'));
 dbConnection()

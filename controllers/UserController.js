@@ -80,7 +80,7 @@ const UserController = {
             }
             const name = new RegExp(req.params.name, "i");
             const user = await User.find({ name });
-            res.send({ msg: "su usuario", user });
+            res.send({ msg: "Usuario encontrado", user });
         } catch (error) {
             console.error(error);
             res.status(500).send({
